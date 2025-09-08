@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>megaCart - Online Shopping</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #151f4e 0%, #5c06b3 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(58, 36, 12, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(156, 60, 8, 0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 1200px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .auth-container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        h1, h2 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(135deg, #08239fb7 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.5em;
+        }
+
+        h3 {
+            color: #641313;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #101941 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            /* transform: translateY(-2px); */
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button.secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        button.add-to-cart {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            width: auto;
+            padding: 8px 16px;
+            margin-top: 10px;
+        }
+
+        .error {
+            color: #f5576c;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(245, 87, 108, 0.1);
+            border-radius: 8px;
+            display: none;
+        }
+
+        .success {
+            color: #00c851;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0, 200, 81, 0.1);
+            border-radius: 8px;
+            display: none;
+        }
+
+        .toggle-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .toggle-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .toggle-link a:hover {
+            color: #764ba2;
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .category {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .category h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .items {
+            list-style: none;
+        }
+
+        .item {
+            background: #f8f9fa;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .item-info {
+            flex-grow: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .item-price {
+            color: #667eea;
+            font-size: 1.1em;
+            font-weight: 700;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .navbar-brand {
+            font-size: 1.8em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .navbar-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .cart-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .cart-items {
+            margin-top: 30px;
+        }
+
+        .cart-item {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .cart-item:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .cart-total {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #333;
+            text-align: right;
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 10px;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 60px;
+            color: #999;
+            font-size: 1.2em;
+        }
+
+        button.remove-item {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+            width: auto;
+            padding: 8px 16px;
+            margin: 0;
+        }
+
+        button.checkout {
+            background: linear-gradient(135deg, #00c851 0%, #00fb68 100%);
+            margin-top: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: fadeIn 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Section -->
+        <div id="loginSection" class="auth-container">
+            <h1>megaCart</h1>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">Username</label>
+                    <input type="text" id="loginUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit">Login</button>
+                <div id="loginError" class="error"></div>
+            </form>
+            <div class="toggle-link">
+                Don't have an account? <a href="#" onclick="showSignup()">Sign up</a>
+            </div>
+        </div>
+
+        <!-- Signup Section -->
+        <div id="signupSection" class="auth-container hidden">
+            <h1>megaCart</h1>
+            <h2>Sign Up</h2>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signupUsername">Username</label>
+                    <input type="text" id="signupUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupConfirmPassword">Confirm Password</label>
+                    <input type="password" id="signupConfirmPassword" required>
+                </div>
+                <button type="submit">Sign Up</button>
+                <div id="signupError" class="error"></div>
+                <div id="signupSuccess" class="success"></div>
+            </form>
+            <div class="toggle-link">
+                Already have an account? <a href="#" onclick="showLogin()">Login</a>
+            </div>
+        </div>
+
+        <!-- Main Shopping Section -->
+        <div id="mainSection" class="hidden">
+            <div class="navbar">
+                <div class="navbar-brand">megaCart</div>
+                <div class="navbar-actions">
+                    <span>Welcome, <strong id="usernameDisplay"></strong></span>
+                    <button onclick="viewCart()" style="width: auto; padding: 10px 20px;">
+                        View Cart <span class="cart-badge" id="cartCount">0</span>
+                    </button>
+                    <button onclick="logout()" class="secondary" style="width: auto; padding: 10px 20px;">Logout</button>
+                </div>
+            </div>
+            
+            <h2>Shop by Category</h2>
+            <div class="categories">
+                <div class="category">
+                    <h3>Electronics</h3>
+                    <ul class="items">
+                        <li class="item">
+                            <div class="item-info">
+                                <div class="item-name" >
+                                  <img src="img1.webp" alt="phone" class="src" width="50px">  Smartphone</div>
+                                <div class="item-price">$699</div>
+                            </div>
+                            <button class="add-to-cart" onclick="addToCart('Smartphone', 699, 'Electronics')">Add to Cart</button>
+                        </li>
+                        <li class="item">
+                            <div class="item-info">
+                                <div class="item-name">
+                                    <img src="laptop.webp" alt="laptop" width="50px" class="src">Laptop</div>
+                                <div class="item-price">$1299</div>
+                            </div>
+                            <button class="add-to-cart" onclick="addToCart('Laptop', 1299, 'Electronics')">Add to Cart</button>
+                        </li>
+                        <li class="item">
+                            <div class="item-info">
+                                <div class="item-name">
+                                    <img src="headphones.webp" alt="headphones" class="src" width="50px">Headphones</div>
+                                <div class="item-price">$199</div>
+                            </div>
+                            <button class="add-to-cart" onclick="addToCart('Headphones', 199, 'Electronics')">Add to Cart</button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="category">
+                    <h3>Clothing</h3>
+                    <ul class="items">
+                        <li class="item">
+                            <div class="item-info">
+                                <div class="item-name">
+                                    <img src="tshirt.webp" alt="tshirt" class="src" width="50px">T-Shirt</div>
+                                <div class="item-price">$29</div>
+                            </div>
+                            <button class="add-to-cart" onclick="addToCart('T-Shirt', 29, 'Clothing')">Add to Cart</button>
+                        </li>
+                        <li class="item">
+                            <div class="item-info">
+                                <div class="item-name">
+                                    <img src="jeans.webp" alt="jeans" class="src" width="50px">Jeans</div>
+                                <div class="item-price">$79</div>
+                            </div>
+                            <button class="add-to-cart" onclick="addToCart('Jeans', 79, 'Clothing')">Add to Cart</button>
+                        </li>
+                        <li class="item">
+                            <div class="item-info">
+                                <div class="item-name"><img src="jacket.webp" alt="jacket" class="src" width="50px">Jacket</div>
+                                <div class="item-price">$149</div>
+                            </div>
+                            <button class="add-to-cart" onclick="addToCart('Jacket', 149, 'Clothing')">Add to Cart</button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="category">
+                    <h3>Books</h3>
+                    <ul class="items">
+                        <li class="item">
+                            <div class="item-info">
+                                <div class="item-name"><img src="novel.webp" alt="novel" width="50px" class="src">Fiction Novel</div>
+                                <div class="item-price">$15</div>
+                            </div>
+                            <button class="add-to-cart" onclick="addToCart('Fiction Novel', 15, 'Books')">Add to Cart</button>
+                        </li>
+                        <li class="item">
+                            <div class="item-info">
+                                <div class="item-name"><img src="guide.webp" alt="guide" width="50px" class="src">Programming Guide</div>
+                                <div class="item-price">$45</div>
+                            </div>
+                            <button class="add-to-cart" onclick="addToCart('Programming Guide', 45, 'Books')">Add to Cart</button>
+                        </li>
+                        <li class="item">
+                            <div class="item-info">
+                                <div class="item-name"><img src="cook book.webp" alt="cook book" class="src" width="50px">Cookbook</div>
+                                <div class="item-price">$25</div>
+                            </div>
+                            <button class="add-to-cart" onclick="addToCart('Cookbook', 25, 'Books')">Add to Cart</button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="category">
+                    <h3>Home & Garden</h3>
+                    <ul class="items">
+                        <li class="item">
+                            <div class="item-info">
+                                <div class="item-name"><img src="coffee.webp" alt="coffee maker" width="50px" class="src">Coffee Maker</div>
+                                <div class="item-price">$89</div>
+                            </div>
+                            <button class="add-to-cart" onclick="addToCart('Coffee Maker', 89, 'Home & Garden')">Add to Cart</button>
+                        </li>
+                        <li class="item">
+                            <div class="item-info">
+                                <div class="item-name"><img src="pot.webp" alt="plant pot" class="src" width="50px">Plant Pot</div>
+                                <div class="item-price">$19</div>
+                            </div>
+                            <button class="add-to-cart" onclick="addToCart('Plant Pot', 19, 'Home & Garden')">Add to Cart</button>
+                        </li>
+                        <li class="item">
+                            <div class="item-info">
+                                <div class="item-name"><img src="lamp.webp" alt="lamp" width="50px" class="src">Lamp</div>
+                                <div class="item-price">$59</div>
+                            </div>
+                            <button class="add-to-cart" onclick="addToCart('Lamp', 59, 'Home & Garden')">Add to Cart</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Section -->
+        <div id="cartSection" class="hidden">
+            <div class="navbar">
+                <div class="navbar-brand">megaCart - Your Cart</div>
+                <div class="navbar-actions">
+                    <button onclick="backToShopping()" style="width: auto; padding: 10px 20px;">Back to Shopping</button>
+                    <button onclick="logout()" class="secondary" style="width: auto; padding: 10px 20px;">Logout</button>
+                </div>
+            </div>
+
+            <div id="cartItems" class="cart-items"></div>
+            <div id="cartTotal" class="cart-total"></div>
+            <button id="checkoutBtn" class="checkout hidden" onclick="checkout()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <script>
+        // In-memory storage for user data and cart
+        let users = {};
+        let currentUser = null;
+        let cart = {};
+
+        // Initialize with some demo users
+        users['demo'] = { password: 'demo123', email: 'demo@megacart.com' };
+
+        // Login functionality
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            if (!username || !password) {
+                errorDiv.textContent = 'Please fill in all fields';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (users[username] && users[username].password === password) {
+                currentUser = username;
+                cart[username] = cart[username] || [];
+                document.getElementById('usernameDisplay').textContent = username;
+                showMain();
+                errorDiv.style.display = 'none';
+            } else {
+                errorDiv.textContent = 'Invalid username or password';
+                errorDiv.style.display = 'block';
+            }
+        });
+
+        // Signup functionality
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('signupUsername').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const errorDiv = document.getElementById('signupError');
+            const successDiv = document.getElementById('signupSuccess');
+            
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            if (!username || !email || !password || !confirmPassword) {
+                errorDiv.textContent = 'Please fill in all fields';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                errorDiv.textContent = 'Passwords do not match';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (password.length < 6) {
+                errorDiv.textContent = 'Password must be at least 6 characters';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (users[username]) {
+                errorDiv.textContent = 'Username already exists';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            users[username] = { password, email };
+            successDiv.textContent = 'Registration successful! You can now login.';
+            successDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                showLogin();
+            }, 2000);
+        });
+
+        // Add to cart functionality
+        function addToCart(name, price, category) {
+            if (!currentUser) return;
+            
+            if (!cart[currentUser]) {
+                cart[currentUser] = [];
+            }
+            
+            const existingItem = cart[currentUser].find(item => item.name === name);
+            
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart[currentUser].push({
+                    name,
+                    price,
+                    category,
+                    quantity: 1
+                });
+            }
+            
+            updateCartCount();
+            
+            // Show feedback
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = 'Added!';
+            button.style.background = 'linear-gradient(135deg, #00c851 0%, #00fb68 100%)';
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.background = 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+            }, 1000);
+        }
+
+        // Update cart count
+        function updateCartCount() {
+            if (!currentUser || !cart[currentUser]) {
+                document.getElementById('cartCount').textContent = '0';
+                return;
+            }
+            
+            const totalItems = cart[currentUser].reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = totalItems;
+        }
+
+        // View cart
+        function viewCart() {
+            document.getElementById('mainSection').classList.add('hidden');
+            document.getElementById('cartSection').classList.remove('hidden');
+            displayCartItems();
+        }
+
+        // Display cart items
+        function displayCartItems() {
+            const cartItemsDiv = document.getElementById('cartItems');
+            const cartTotalDiv = document.getElementById('cartTotal');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            
+            if (!currentUser || !cart[currentUser] || cart[currentUser].length === 0) {
+                cartItemsDiv.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
+                cartTotalDiv.style.display = 'none';
+                checkoutBtn.classList.add('hidden');
+                return;
+            }
+            
+            let html = '';
+            let total = 0;
+            
+            cart[currentUser].forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                html += `
+                    <div class="cart-item">
+                        <div>
+                            <div class="item-name">${item.name}</div>
+                            <div style="color: #999; font-size: 0.9em;">${item.category}</div>
+                            <div class="item-price">$${item.price} x ${item.quantity} = $${itemTotal}</div>
+                        </div>
+                        <button class="remove-item" onclick="removeFromCart(${index})">Remove</button>
+                    </div>
+                `;
+            });
+            
+            cartItemsDiv.innerHTML = html;
+            cartTotalDiv.innerHTML = `Total: $${total}`;
+            cartTotalDiv.style.display = 'block';
+            checkoutBtn.classList.remove('hidden');
+        }
+
+        // Remove from cart
+        function removeFromCart(index) {
+            if (!currentUser || !cart[currentUser]) return;
+            
+            cart[currentUser].splice(index, 1);
+            updateCartCount();
+            displayCartItems();
+        }
+
+        // Checkout
+        function checkout() {
+            if (!currentUser || !cart[currentUser] || cart[currentUser].length === 0) return;
+            
+            const total = cart[currentUser].reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            alert(`Thank you for your purchase!\n\nOrder Summary:\n${cart[currentUser].map(item => `${item.name} x${item.quantity}: $${item.price * item.quantity}`).join('\n')}\n\nTotal: $${total}\n\nYour order will be delivered soon!`);
+            
+            cart[currentUser] = [];
+            updateCartCount();
+            backToShopping();
+        }
+
+        // Back to shopping
+        function backToShopping() {
+            document.getElementById('cartSection').classList.add('hidden');
+            document.getElementById('mainSection').classList.remove('hidden');
+        }
+
+        // Navigation functions
+        function showLogin() {
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('signupSection').classList.add('hidden');
+            document.getElementById('mainSection').classList.add('hidden');
+            document.getElementById('cartSection').classList.add('hidden');
+        }
+
+        function showSignup() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('signupSection').classList.remove('hidden');
+            document.getElementById('mainSection').classList.add('hidden');
+            document.getElementById('cartSection').classList.add('hidden');
+        }
+
+        function showMain() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('signupSection').classList.add('hidden');
+            document.getElementById('mainSection').classList.remove('hidden');
+            document.getElementById('cartSection').classList.add('hidden');
+            updateCartCount();
+        }
+
+        function logout() {
+            currentUser = null;
+            showLogin();
+            document.getElementById('loginForm').reset();
+        }
+    </script>
+</body>
+</html>
